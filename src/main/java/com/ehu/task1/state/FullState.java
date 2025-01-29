@@ -7,7 +7,7 @@ public class FullState implements State {
         throw new IllegalStateException("Buffer is full.");
     }
 
-    public int get(Buffer buffer){
+    public int get(Buffer buffer) throws InterruptedException {
         int task = buffer.removeTask();
         buffer.setState(new NormalState());
         return task;

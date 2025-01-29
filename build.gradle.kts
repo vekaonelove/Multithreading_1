@@ -27,3 +27,6 @@ java {
     }
 }
 
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}

@@ -1,7 +1,6 @@
 package com.ehu.task1;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
+import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,14 +17,8 @@ public class Producer implements Callable<Void> {
     @Override
     public Void call() throws InterruptedException {
         for (int i = 0; i < tasksToProduce; i++) {
-            if (!buffer.isFull()) {
-                buffer.addTask(i);
-                logger.info("Produced task " + i);
-                TimeUnit.MILLISECONDS.sleep(100);
-            } else {
-                logger.warn("Buffer is full, producer is waiting...");
-                TimeUnit.MILLISECONDS.sleep(500);
-            }
+            buffer.addTask(i);
+            logger.info("Produced task " + i);
         }
         return null;
     }

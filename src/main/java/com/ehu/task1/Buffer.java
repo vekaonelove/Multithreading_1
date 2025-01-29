@@ -1,50 +1,53 @@
 package com.ehu.task1;
+
 import com.ehu.task1.state.EmptyState;
+import com.ehu.task1.state.FullState;
+import com.ehu.task1.state.NormalState;
 import com.ehu.task1.state.State;
 
 import java.util.LinkedList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Buffer {
     private final int capacity;
     private final LinkedList<Integer> tasks = new LinkedList<>();
     private State currentState;
-    private final Lock lock = new ReentrantLock();
 
     public Buffer(int capacity) {
         this.capacity = capacity;
         this.currentState = new EmptyState();
     }
 
-    public void addTask(int task){
-        lock.lock();
-        try {
-            tasks.add(task);
-        } finally {
-            lock.unlock();
+    public synchronized void addTask(int task) throws InterruptedException {
+        while (tasks.size() >= capacity) {
+            wait(); // Wait if buffer is full
         }
+        tasks.add(task);
+        updateState();
+        notifyAll(); // Notify consumers
     }
 
-    public int removeTask() {
-        lock.lock();
-        try {
-            return tasks.removeFirst();
-        } finally {
-            lock.unlock();
+    public synchronized int removeTask() throws InterruptedException {
+        while (tasks.isEmpty()) {
+            wait(); // Wait if buffer is empty
         }
+        int task = tasks.removeFirst();
+        updateState();
+        notifyAll(); // Notify producers
+        return task;
     }
 
-    public State getState() {
-        return currentState;
-    }
-
-    public void setState(State state) {
+    public synchronized void setState(State state) { // Ensure this method exists
         this.currentState = state;
     }
 
-    public int size() {
-        return tasks.size();
+    private void updateState() {
+        if (tasks.isEmpty()) {
+            setState(new EmptyState());
+        } else if (tasks.size() >= capacity) {
+            setState(new FullState());
+        } else {
+            setState(new NormalState());
+        }
     }
 
     public boolean isFull() {

@@ -3,7 +3,7 @@ package com.ehu.task1.state;
 import com.ehu.task1.Buffer;
 
 public class EmptyState implements State {
-    public void put(Buffer buffer, int task) {
+    public void put(Buffer buffer, int task) throws InterruptedException {
         buffer.addTask(task);
         buffer.setState(new NormalState());
     }

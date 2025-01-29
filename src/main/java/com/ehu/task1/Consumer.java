@@ -1,7 +1,6 @@
 package com.ehu.task1;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
+import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,16 +20,9 @@ public class Consumer implements Callable<Void> {
     @Override
     public Void call() throws InterruptedException {
         while (isRunning) {
-            if (!buffer.isEmpty()) {
-                int task = buffer.removeTask();
-                logger.info("Consumed task " + task);
-                TimeUnit.MILLISECONDS.sleep(200);
-            } else {
-                logger.warn("Buffer is empty, consumer is waiting...");
-                TimeUnit.MILLISECONDS.sleep(500);
-            }
+            int task = buffer.removeTask();
+            logger.info("Consumed task " + task);
         }
-        logger.info("Consumer stopped.");
         return null;
     }
 }
