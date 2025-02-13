@@ -18,7 +18,7 @@ public class Producer implements Callable<Void> {
     public Void call() throws InterruptedException {
         for (int i = 0; i < tasksToProduce; i++) {
             buffer.addTask(i);
-            logger.info("Produced task " + i);
+            logger.info("Produced task {}", i);
         }
         return null;
     }

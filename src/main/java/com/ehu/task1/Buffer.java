@@ -1,10 +1,6 @@
 package com.ehu.task1;
 
-import com.ehu.task1.state.EmptyState;
-import com.ehu.task1.state.FullState;
-import com.ehu.task1.state.NormalState;
-import com.ehu.task1.state.State;
-
+import com.ehu.task1.state.*;
 import java.util.LinkedList;
 
 public class Buffer {
@@ -18,36 +14,26 @@ public class Buffer {
     }
 
     public synchronized void addTask(int task) throws InterruptedException {
-        while (tasks.size() >= capacity) {
-            wait(); // Wait if buffer is full
-        }
-        tasks.add(task);
-        updateState();
-        notifyAll(); // Notify consumers
+        currentState.put(this, task);
+        notifyAll();
     }
 
     public synchronized int removeTask() throws InterruptedException {
-        while (tasks.isEmpty()) {
-            wait(); // Wait if buffer is empty
-        }
-        int task = tasks.removeFirst();
-        updateState();
-        notifyAll(); // Notify producers
+        int task = currentState.get(this);
+        notifyAll();
         return task;
     }
 
-    public synchronized void setState(State state) { // Ensure this method exists
+    public synchronized void setState(State state) {
         this.currentState = state;
     }
 
-    private void updateState() {
-        if (tasks.isEmpty()) {
-            setState(new EmptyState());
-        } else if (tasks.size() >= capacity) {
-            setState(new FullState());
-        } else {
-            setState(new NormalState());
-        }
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public LinkedList<Integer> getTasks() {
+        return tasks;
     }
 
     public boolean isFull() {
